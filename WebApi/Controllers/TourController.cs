@@ -10,8 +10,8 @@ using AutoMapper;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles ="guide", AuthenticationSchemes ="Bearer")]
-    [Route("api/guide")]
+    [Authorize( AuthenticationSchemes ="Bearer")]
+    [Route("api/tour/b ")]
     [ApiController]
     public class TourController:ControllerBase
     {
@@ -24,6 +24,7 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles ="admin")]
         [Route("delete/{TourId}")]
         public async Task<ActionResult> DeleteTour(int tourId)
         {
@@ -31,26 +32,38 @@ namespace WebApi.Controllers
             Log.Information($"Tour{tourId} is deleted");
             return Ok(operationDetails);
         }
-        //[HttpGet]
-        //[Route("/getall")]
-        //[AllowAnonymous]
-        //public IActionResult GetAllTours()
-        //{
-        //    return Ok(_tourService.)
-        //}
 
         [HttpGet]
-        public async Task<ActionResult> GetAllToursUserVisited(string userId)
+        public IActionResult GetAllTours()
         {
-            ICollection<TourDTO> visitedTours =await _tourService.GetToursUserVisited(userId);
+            IEnumerable<TourDTO> allTours = _tourService.GetAllTours();
+            Log.Information("All visited tours");
+            return Ok(allTours);
+        }
+        [HttpGet]
+        [Route("{userId}")]
+        public IActionResult GetAllToursUserVisited(string userId)
+        {
+            IEnumerable<TourDTO> visitedTours = _tourService.GetToursUserVisited(userId);
             Log.Information($"Visited tours by this user{userId} are here");
             return Ok(visitedTours);
         }
 
         [HttpPut]
+        [Route("/create/{userId}")]
+        [Authorize(Roles ="admin")]
         public async Task<ActionResult> CreateTour([FromBody] TourModel tourModel)
-        { 
-            var tourDTO = Mapper.Map<TourDTO>(tourModel);
+        {
+            TourDTO tourDTO = new TourDTO
+            {
+                Name = tourModel.Name,
+                City = tourModel.City,
+                Location = tourModel.Location,
+                Price = tourModel.Price,
+                PlacesCount = tourModel.PlacesCount,
+                Description = tourModel.Description,
+                Date = tourModel.Date
+            };
             var operationDetails = await _tourService.AddTour(tourDTO);
             Log.Information($"Tour{tourDTO.Id} is added succesfully");
             return Ok(operationDetails);

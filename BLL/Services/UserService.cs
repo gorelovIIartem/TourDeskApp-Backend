@@ -22,8 +22,8 @@ namespace BLL.Services
         public async Task<OperationDetails> CreateUserAsync(UserDTO userDTO)
         {
 
-            //await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
-            //await Database.SaveAsync();
+            await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
+            await Database.SaveAsync();
 
             if (userDTO == null) throw new ValidationException("UserDTO is null", "");
             ApplicationUser user = await Database.UserManager.FindByNameAsync(userDTO.UserName);
@@ -131,6 +131,7 @@ namespace BLL.Services
             profile.Age = userDTO.Age;
             profile.Email = userDTO.Email;
             profile.Birthday = userDTO.Birthday;
+            profile.Address = userDTO.Address;
             Database.ProfileManager.Update(profile);
             await Database.SaveAsync();
             return new OperationDetails(true, "Information updated succesfully", "UserProfile");
@@ -156,6 +157,17 @@ namespace BLL.Services
                 };
             }
             else return null;
+        }
+
+        public async Task<OperationDetails> UploadImage(string photoUrl, string userId)
+        {
+            ApplicationUser user = await Database.UserManager.FindByIdAsync(userId);
+            if (user == null) throw new ValidationException("User does not exist", userId);
+            UserProfile userProfile = user.User.UserProfile;
+            userProfile.ImageUrl = photoUrl;
+            Database.ProfileManager.Update(userProfile);
+            await Database.SaveAsync();
+            return new OperationDetails(true, photoUrl, "profile");
         }
     }
 }

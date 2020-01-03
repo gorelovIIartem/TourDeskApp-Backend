@@ -36,7 +36,7 @@ namespace DAL.EF
             #region Tour settings
             modelBuilder.Entity<Tour>().HasKey(p => p.Id);
             modelBuilder.Entity<Tour>().ToTable("Tours");
-            modelBuilder.Entity<Tour>().Property(p => p.Id).ValueGeneratedNever();
+            //modelBuilder.Entity<Tour>().Property(p => p.Id).ValueGeneratedNever();
             #endregion
 
             #region Ticket settings

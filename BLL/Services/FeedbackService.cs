@@ -14,7 +14,7 @@ namespace BLL.Services
 {
     public class FeedbackService : IFeedbackService
     {
-        private IUnitOfWork DataBase;
+        private readonly IUnitOfWork DataBase;
 
         public FeedbackService(IUnitOfWork uow)
         {

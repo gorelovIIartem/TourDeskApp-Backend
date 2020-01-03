@@ -15,6 +15,8 @@ namespace BLL.Interfaces
         Task<IList<string>> GetRolesByUserId(string userId);
         Task<UserDTO> FindUserByIdAsync(string userId);
         Task<OperationDetails> ChangeProfileInformation(UserDTO userDTO);
+        Task<OperationDetails> UploadImage(string photoUrl, string userId);
+
         
     }
 }

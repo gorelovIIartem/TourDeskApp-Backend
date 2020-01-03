@@ -19,16 +19,13 @@ namespace BLL.Services
         {
             DataBase = uow;
         }
-        public async Task<ICollection<TourDTO>> GetToursUserVisited(string userId)
+        public IEnumerable<TourDTO> GetToursUserVisited(string userId)
         {
             ICollection<TourDTO> tourDTO = null;
-            await Task.Run(() =>
-            {
-                var user = DataBase.ProfileManager.Get(userId);
-                if (user == null)
-                    throw new ValidationException("User is not found", "Id");
+                var user =  DataBase.ProfileManager.Get(userId);
+        //        if (user == null)
+      //              throw new ValidationException("User is not found", "Id");
                 tourDTO = Mapper.Map<ICollection<TourDTO>>(DataBase.TourManager.GetAll().Where(p => p.UserId == userId));
-            });
             return tourDTO;
         }
 
@@ -36,7 +33,7 @@ namespace BLL.Services
         {
             if (tourDTO == null)
                 throw new ValidationException("There is no information about this tour", "Id");
-            var tour = DataBase.TourManager.GetAll().Where(p => p.Name == tourDTO.Name || p.Id == tourDTO.Id).FirstOrDefault();
+            var tour = DataBase.TourManager.GetAll().Where(p => p.Name == tourDTO.Name).FirstOrDefault();
             if (tour != null)
                 throw new ValidationException("This tour already exists", "Name");
             DataBase.TourManager.Create(Mapper.Map<TourDTO, Tour>(tourDTO));
@@ -104,6 +101,13 @@ namespace BLL.Services
             DataBase.TourManager.Update(tour);
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Tour successfully changed", "Tour");
+        }
+
+        public IEnumerable<TourDTO> GetAllTours()
+        {
+            IEnumerable<TourDTO> allTours = null;
+            allTours = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll());
+            return allTours;
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Filters;
 using Serilog;
+using System.IO;
 
 namespace WebApi.Controllers
 {
@@ -59,6 +60,7 @@ namespace WebApi.Controllers
 
         [ModelValidationFilter]
         [HttpPut]
+        [Route("{userId}")]
         public async Task<ActionResult> ChageUser([FromBody] UserProfileModel userModel)
         {
             UserDTO user = new UserDTO
@@ -75,6 +77,32 @@ namespace WebApi.Controllers
             return Ok(operationDetails);
         }
        
+        [HttpPut]
+        [CheckCurrentUserFilter]
+        [Route("{userId}/uploadImage")]
+        public async Task<ActionResult> UploadImage(string userId)
+        {
+            var user = await _userService.FindUserByIdAsync(userId);
+            var postedFile = Request.Form.Files["Image"];
+            if (postedFile == null)
+            {
+                Log.Warning($"User {userId} did not attach the file. 404 returned");
+                return BadRequest("File has not been attached");
+            }
+            if ((postedFile.ContentType.Contains("jpg") || postedFile.ContentType.Contains("png") || postedFile.ContentType.Contains("jpeg")) == false)
+            {
+                Log.Warning($"User {userId} attached file with uncorrect format");
+                return BadRequest("The file format is wrong");
+            }
+            var imageUrl = $"{Directory.GetCurrentDirectory()}/ProfileImages/{postedFile.FileName}";
+            using (var stream = new FileStream(imageUrl, FileMode.Create))
+            {
+                postedFile.CopyTo(stream);
+            }
+            OperationDetails operationDetails = await _userService.UploadImage(imageUrl, user.Id);
+            Log.Information($"User {user.Id} changed image");
+            return Ok(operationDetails);
+        }
 
 
     }

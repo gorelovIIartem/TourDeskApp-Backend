@@ -14,5 +14,6 @@ namespace DAL.Entities
         public string Email { get; set; }
         public virtual User User { get; set; }
         public DateTime Birthday { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

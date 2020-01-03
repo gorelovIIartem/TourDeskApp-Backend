@@ -12,6 +12,7 @@ namespace BLL.DTO
         public int PlacesCount { get; set; }
         public string Description { get; set; }
         public string UserId { get; set; }
+        public string ImageUrl { get; set; }
         public DateTime Date { get; set; }
     }
 }

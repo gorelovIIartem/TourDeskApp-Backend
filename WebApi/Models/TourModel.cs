@@ -6,7 +6,7 @@ namespace WebApi.Models
 {
     public class TourModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
@@ -20,6 +20,6 @@ namespace WebApi.Models
         public string Description { get; set; }
         [Required]
         public DateTime Date { get; set; }
-        public string ImageUrl { get; set; }
+       // public string ImageUrl { get; set; }
     }
 }
