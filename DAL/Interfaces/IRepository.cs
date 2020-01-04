@@ -8,6 +8,7 @@ namespace DAL.Interfaces
         TEntity Get(TKey id);
         void Create(TEntity item);
         void Delete(TKey id);
+        void Delete(TEntity item);
         void Update(TEntity item);
         IEnumerable<TEntity> GetAll();
     }

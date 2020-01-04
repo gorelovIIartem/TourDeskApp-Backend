@@ -27,6 +27,11 @@ namespace DAL.Repositories
                 _database.Tours.Remove(tour);
         }
 
+        public void Delete(Tour item)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Tour Get(int id)
         {
             return _database.Tours.Find(id);

@@ -21,12 +21,25 @@ namespace BLL.Services
         }
         public IEnumerable<TourDTO> GetToursUserVisited(string userId)
         {
-            ICollection<TourDTO> tourDTO = null;
+            ICollection<TicketDTO> tickets = null;
                 var user =  DataBase.ProfileManager.Get(userId);
-        //        if (user == null)
-      //              throw new ValidationException("User is not found", "Id");
-                tourDTO = Mapper.Map<ICollection<TourDTO>>(DataBase.TourManager.GetAll().Where(p => p.UserId == userId));
-            return tourDTO;
+            if (user == null)
+                    throw new ValidationException("User is not found", "Id");
+                tickets = Mapper.Map<ICollection<TicketDTO>>(DataBase.TicketManager.GetAll().Where(p=>p.UserId==userId));
+            ICollection < TourDTO > tours = Mapper.Map<ICollection<TourDTO>>(DataBase.TourManager.GetAll());
+            List<TourDTO> visitedtours = new List<TourDTO>();
+            foreach(var ticket in tickets)
+            {
+                foreach(var tour in tours)
+                {
+                    if(ticket.TourId == tour.Id)
+                    {
+                        visitedtours.Add(tour);
+                    }
+                }
+            }
+            
+            return visitedtours ;
         }
 
         public async Task<OperationDetails> AddTour(TourDTO tourDTO)

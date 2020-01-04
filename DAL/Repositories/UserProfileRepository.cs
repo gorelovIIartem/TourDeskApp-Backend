@@ -27,6 +27,11 @@ namespace DAL.Repositories
                 _database.Profiles.Remove(userProfile);
         }
 
+        public void Delete(UserProfile item)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public UserProfile Get(string id)
         {
             return _database.Profiles.Find(id);

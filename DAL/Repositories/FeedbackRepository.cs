@@ -26,6 +26,11 @@ namespace DAL.Repositories
                 _database.FeedBacks.Remove(feedback);
         }
 
+        public void Delete(Feedback item)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Feedback Get(int id)
         {
             return _database.FeedBacks.Find(id);

@@ -27,7 +27,7 @@ namespace BLL.Services
 
             if (userDTO == null) throw new ValidationException("UserDTO is null", "");
             ApplicationUser user = await Database.UserManager.FindByNameAsync(userDTO.UserName);
-            if (user != null) throw new ValidationException("UserWith this login already exists", userDTO.UserName);
+          //  if (user != null) throw new ValidationException("UserWith this login already exists", userDTO.UserName);
             user = new ApplicationUser { UserName = userDTO.UserName };
             var result = await Database.UserManager.CreateAsync(user, userDTO.Password);
             if (result.Errors.Count() > 0) return new OperationDetails(false, string.Join(",", result.Errors.Select(p => p.Description)), null);
@@ -82,15 +82,28 @@ namespace BLL.Services
 
         public async Task<OperationDetails> DeleteUser(string userId)
         {
-            ApplicationUser user = await Database.UserManager.FindByIdAsync(userId);
-            if (user == null) throw new ValidationException("User not found", "");
-            var UserRoles = this.GetRolesByUserId(userId);
-            if (UserRoles.Result.Contains("deleted") == false)
-            {
-                await Database.UserManager.AddToRoleAsync(user, "deleted");
-            }
-            else throw new ValidationException("User already deleted", "");
+            if (string.IsNullOrEmpty(userId))
+                throw new ValidationException("Incorect input data", userId);
+            var user = await Database.UserManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new ValidationException("User is not found", userId);
+            Database.QUserManager.Delete(userId);
+            await Database.UserManager.DeleteAsync(user);
             await Database.SaveAsync();
+          
+
+
+            //await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("deleted"));
+            //await Database.SaveAsync();
+
+            //ApplicationUser user = await Database.UserManager.FindByIdAsync(userId);
+            //if (user == null) throw new ValidationException("User not found", "");
+            //var UserRoles = this.GetRolesByUserId(userId);
+            //if (UserRoles.Result.Contains("deleted") == false)
+            //{
+            //    await Database.UserManager.AddToRoleAsync(user, "deleted");
+            //}
+            //else throw new ValidationException("User already deleted", "");
             return new OperationDetails(true, "Successfully deleted", userId);
         }
 
@@ -132,6 +145,7 @@ namespace BLL.Services
             profile.Email = userDTO.Email;
             profile.Birthday = userDTO.Birthday;
             profile.Address = userDTO.Address;
+            profile.ImageUrl = userDTO.ImageUrl;
             Database.ProfileManager.Update(profile);
             await Database.SaveAsync();
             return new OperationDetails(true, "Information updated succesfully", "UserProfile");

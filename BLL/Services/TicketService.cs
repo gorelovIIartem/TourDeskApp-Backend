@@ -27,17 +27,29 @@ namespace BLL.Services
         }
 
 
-        public async Task<TicketDTO> BuyTicket(TourDTO tourDTO)
+        public async Task<TicketDTO> BuyTicket(TicketDTO ticketDTO, int tourId)
         {
-            TicketDTO ticket = null;
-            if (tourDTO == null)
-                throw new ValidationException("There is no information about this tour", "");
-            if (tourDTO.PlacesCount == 0)
-                throw new ValidationException("There is no free places in this tour", "");
-            DataBase.TicketManager.Create(Mapper.Map<TicketDTO, Ticket>(ticket));
-            tourDTO.PlacesCount--;
+            TourDTO tour = Mapper.Map<TourDTO>(DataBase.TourManager.Get(tourId));
+            if (tour == null)
+                throw new ValidationException("There is no information about this tour", tour.Name);
+            if (ticketDTO == null)
+                throw new ValidationException("There is no information",$"{ticketDTO.Id}");
+            ApplicationUser user = await DataBase.UserManager.FindByIdAsync(ticketDTO.UserId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", user.UserName);
+            if (tour.PlacesCount < 1)
+                throw new ValidationException("There is no free places", tour.Name);
+            Ticket ticket = new Ticket
+            {
+                UserId = ticketDTO.UserId,
+                TourId = ticketDTO.TourId,
+                PurchaseDate = DateTime.Now,
+                IsSold = true
+            };
+            DataBase.TicketManager.Create(ticket);
+            tour.PlacesCount--;
             await DataBase.SaveAsync();
-            return ticket;
+            return Mapper.Map<TicketDTO>(ticket);
 
         }
 
@@ -74,12 +86,16 @@ namespace BLL.Services
             return ticket;
         }
 
-        public async Task<OperationDetails> DeleteTicket(int TicketId)
+        public async Task<OperationDetails> DeleteTicket(string userId, int tourId)
         {
-            Ticket ticket = DataBase.TicketManager.Get(TicketId);
-            if (ticket == null)
-                throw new ValidationException("There is no information about this ticket", "");
-            DataBase.TicketManager.Delete(TicketId);
+            var user = DataBase.QUserManager.Get(userId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", userId);
+            var tour = DataBase.TourManager.Get(tourId);
+            if (tour == null)
+                throw new ValidationException("There is no information about this tour", "");
+            Ticket ticket = DataBase.TicketManager.GetAll().Where(p => p.UserId == userId && p.TourId == tourId).FirstOrDefault();
+             DataBase.TicketManager.Delete(ticket);
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Ticket deleted successfully", "ticket");
         }

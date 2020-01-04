@@ -14,6 +14,6 @@ namespace BLL.DTO
         public string Address { get; set; }
         public string Email { get; set; }
         public DateTime Birthday { get; set; }
-        public string AboutUrl { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

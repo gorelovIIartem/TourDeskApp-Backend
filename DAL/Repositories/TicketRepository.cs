@@ -25,6 +25,10 @@ namespace DAL.Repositories
             if (ticket != null)
                 _database.Tickets.Remove(ticket);
         }
+        public void Delete(Ticket item)
+        {
+            _database.Remove(item);
+        }
 
         public Ticket Get(int id)
         {

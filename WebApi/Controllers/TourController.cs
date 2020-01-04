@@ -10,8 +10,8 @@ using AutoMapper;
 
 namespace WebApi.Controllers
 {
-    [Authorize( AuthenticationSchemes ="Bearer")]
-    [Route("api/tour/b ")]
+    [ Authorize(Roles ="user" , AuthenticationSchemes ="Bearer")]
+    [Route("api/tour")]
     [ApiController]
     public class TourController:ControllerBase
     {
@@ -34,6 +34,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("{tourId}")]
+        public IActionResult GetTour(int tourId)
+        {
+            TourDTO tour = _tourService.GetTour(tourId);
+            Log.Information($"Your tour with id: {tourId}");
+            return Ok(tour);
+        }
+
+        [HttpGet]
         public IActionResult GetAllTours()
         {
             IEnumerable<TourDTO> allTours = _tourService.GetAllTours();
@@ -41,7 +50,7 @@ namespace WebApi.Controllers
             return Ok(allTours);
         }
         [HttpGet]
-        [Route("{userId}")]
+        [Route("visitedtours/{userId}")]
         public IActionResult GetAllToursUserVisited(string userId)
         {
             IEnumerable<TourDTO> visitedTours = _tourService.GetToursUserVisited(userId);
@@ -50,7 +59,6 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("/create/{userId}")]
         [Authorize(Roles ="admin")]
         public async Task<ActionResult> CreateTour([FromBody] TourModel tourModel)
         {

@@ -42,7 +42,7 @@ namespace WebApi.Controllers
         }
         [HttpDelete]
         [CheckCurrentUserFilter]
-        [Route("/delete/{userId}")]
+        [Route("delete/{userId}")]
         public async Task<ActionResult> DeleteUser(string userId)
         {
             await _userService.DeleteUser(userId);
@@ -71,7 +71,8 @@ namespace WebApi.Controllers
                 Address = userModel.Address,
                 FullName = userModel.FullName,
                 Id = userModel.UserId,
-                Email=userModel.Email
+                Email=userModel.Email,
+                ImageUrl=userModel.ImageUrl
             };
             var operationDetails = await _userService.ChangeProfileInformation(user);
             return Ok(operationDetails);

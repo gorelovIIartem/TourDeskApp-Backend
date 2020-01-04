@@ -9,6 +9,7 @@ using BLL.Interfaces;
 using WebApi.Configuration;
 using WebApi.Models;
 using Serilog;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers
 {

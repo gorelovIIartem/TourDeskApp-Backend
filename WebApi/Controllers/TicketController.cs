@@ -5,16 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
+using WebApi.Models;
+using AutoMapper;
+using DAL.Entities;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+   // [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
     [Route("api/ticket")]
     [ApiController]
     public class TicketController:ControllerBase
     {
         private ITicketService _ticketService;
         private ITourService _tourService;
+        private IUserService _userService;
 
         public TicketController(ITicketService ticketService, ITourService tourService)
         {
@@ -23,11 +27,11 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> BuyTicket(TourDTO tourDTO)
+        public async Task<ActionResult> BuyTicket([FromBody] TicketModel model, int tourId)
         {
-            var ticket = await _ticketService.BuyTicket(tourDTO);
-            Log.Information("Here is your ticket. Have a nice trip");
-            return Ok(ticket);
+            TicketDTO ticket = Mapper.Map<TicketModel, TicketDTO>(model);
+            var purchase = await _ticketService.BuyTicket(ticket, tourId);
+            return Ok();
         }
 
         [HttpGet]
@@ -46,6 +50,14 @@ namespace WebApi.Controllers
             Log.Information($"Here are all sold tickets for {date}");
             return Ok(tickets);
         }
-         
+
+        [HttpDelete]
+        [Route("{userId}/{tourId}")]
+        public async Task<ActionResult> CancelPurchase(string userId, int tourId)
+        {
+            await _ticketService.DeleteTicket(userId, tourId);
+            return Ok();
+        }
+
     }
 }

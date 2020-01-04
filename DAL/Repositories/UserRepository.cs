@@ -27,6 +27,11 @@ namespace DAL.Repositories
                 _database.QUsers.Remove(user);
         }
 
+        public void Delete(User item)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public User Get(string id)
         {
             return _database.QUsers.Find(id);
