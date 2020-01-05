@@ -60,6 +60,11 @@ namespace BLL.Services
             Tour tour = DataBase.TourManager.Get(tourId);
             if (tour == null)
                 throw new ValidationException("Tour with this id does not exist. Check it out Id", "Id");
+            IEnumerable<Feedback> feedbacks = DataBase.FeedbackManager.GetAll().Where(p => p.TourId == tourId);
+            foreach(var feedback in feedbacks)
+            {
+                DataBase.FeedbackManager.Delete(feedback);
+            }
             DataBase.TourManager.Delete(tourId);
             await DataBase.SaveAsync();
             return new OperationDetails(true, "This tour was deleted succesfully", "tour");
@@ -135,6 +140,20 @@ namespace BLL.Services
             DataBase.TourManager.Update(Mapper.Map<Tour>(tourDTO));
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Guide for this tour updated", "Tour");
+        }
+
+        public async Task<IEnumerable<TourDTO>> GetGuideTours(string userId)
+        {
+            ApplicationUser user = await DataBase.UserManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", "Incorrect id");
+            List<TourDTO> tours = new List<TourDTO>();
+            IEnumerable<TourDTO> tourDTOs = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll().Where(p => p.UserId == userId));
+            foreach(var toursIE in tourDTOs)
+            {
+                tours.Add(toursIE);
+            }
+            return tours;
         }
     }
 }

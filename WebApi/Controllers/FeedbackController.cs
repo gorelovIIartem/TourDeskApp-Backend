@@ -10,7 +10,7 @@ using System;
 
 namespace WebApi.Controllers
 {
-   // [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
     [Route("api/feedbacks")]
     [ApiController]
     public class FeedbackController:ControllerBase

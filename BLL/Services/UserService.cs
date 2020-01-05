@@ -23,8 +23,8 @@ namespace BLL.Services
         public async Task<OperationDetails> CreateUserAsync(UserDTO userDTO)
         {
 
-            //await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
-            //await Database.SaveAsync();
+            await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
+            await Database.SaveAsync();
 
             if (userDTO == null) throw new ValidationException("UserDTO is null", "");
             ApplicationUser user = await Database.UserManager.FindByNameAsync(userDTO.UserName);
@@ -186,7 +186,7 @@ namespace BLL.Services
             return new OperationDetails(true, photoUrl, "profile");
         }
 
-        public async Task<UserDTO> GetGuideByTourId(int tourId)
+        public async  Task<UserDTO> GetGuideByTourId(int tourId)
         {
             TourDTO tourDTO = Mapper.Map<TourDTO>(Database.TourManager.Get(tourId));
             if (tourDTO == null)
@@ -208,5 +208,32 @@ namespace BLL.Services
                 UserName = user.UserName
             };
         }
+        public async Task<IEnumerable<UserDTO>> GetAllUsers()
+        {
+            List<UserDTO> users = null;
+            await Task.Run(() =>
+            {
+                List<UserProfile> boofUsers = Mapper.Map<List<UserProfile>>(Database.QUserManager.GetAll());
+
+                foreach(var boofUser in boofUsers)
+                {
+                    UserProfile userProfile;
+                    userProfile = boofUser.User.UserProfile;
+                    users.Add(new UserDTO()
+                    {
+                        FullName = userProfile.FullName,
+                        Id =  boofUser.UserId,
+                        Address = userProfile.Address,
+                        Age = userProfile.Age,
+                        ImageUrl = userProfile.ImageUrl,
+                        Phone = userProfile.Phone,
+                        Birthday = userProfile.Birthday
+                    });
+                }
+            });
+            return users;
+        }
+
     }
+
 }

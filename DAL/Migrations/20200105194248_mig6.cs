@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.Migrations
 {
-    public partial class initial_migration : Migration
+    public partial class mig6 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -209,7 +209,8 @@ namespace DAL.Migrations
                     Phone = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    Birthday = table.Column<DateTime>(nullable: false)
+                    Birthday = table.Column<DateTime>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -226,11 +227,13 @@ namespace DAL.Migrations
                 name: "Feedbacks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Content = table.Column<string>(nullable: true),
                     CreationDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
-                    TourId = table.Column<int>(nullable: false)
+                    TourId = table.Column<int>(nullable: false),
+                    UserName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

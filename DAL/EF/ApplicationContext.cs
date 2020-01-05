@@ -23,9 +23,9 @@ namespace DAL.EF
             #region Feedback settings
             modelBuilder.Entity<Feedback>().HasKey(p => p.Id);
             modelBuilder.Entity<Feedback>().ToTable("Feedbacks");
-            modelBuilder.Entity<Feedback>().Property(p => p.Id).ValueGeneratedNever();
+           // modelBuilder.Entity<Feedback>().Property(p => p.Id).ValueGeneratedNever();
             modelBuilder.Entity<Feedback>().HasOne(p => p.Tour).WithMany(p => p.FeedBacks).HasForeignKey(p => p.TourId).OnDelete(DeleteBehavior.Restrict);
-            //modelBuilder.Entity<FeedBack>().HasOne(p => p.User).WithMany(p => p.FeedBacks).HasForeignKey(p => p.UserId);
+           // modelBuilder.Entity<Feedback>().HasOne(p => p.User).WithMany(p => p.FeedBacks).HasForeignKey(p => p.UserId);
             #endregion
 
             #region User setting

@@ -6,8 +6,10 @@ using BLL.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Filters;
+using BLL.Services;
 using Serilog;
 using System.IO;
+using System.Collections.Generic;
 
 namespace WebApi.Controllers
 {
@@ -105,6 +107,13 @@ namespace WebApi.Controllers
             return Ok(operationDetails);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetUsers()
+        {
+            IEnumerable<UserDTO> users = await _userService.GetAllUsers();
+            Log.Information("All users");
+            return Ok(users);
+        }
 
     }
 }

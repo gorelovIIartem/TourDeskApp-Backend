@@ -28,7 +28,7 @@ namespace DAL.Repositories
 
         public void Delete(Feedback item)
         {
-            throw new System.NotImplementedException();
+            _database.Remove(item);
         }
 
         public Feedback Get(int id)

@@ -12,7 +12,7 @@ using System.IO;
 
 namespace WebApi.Controllers
 {
-    //[ Authorize(Roles ="user" , AuthenticationSchemes ="Bearer")]
+    [ Authorize(Roles ="user" , AuthenticationSchemes ="Bearer")]
     [Route("api/tour")]
     [ApiController]
     public class TourController:ControllerBase
@@ -61,7 +61,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles ="admin")]
+       // [Authorize(Roles ="admin")]
         public async Task<ActionResult> CreateTour([FromBody] TourModel tourModel)
         {
             TourDTO tourDTO = new TourDTO
@@ -162,6 +162,18 @@ namespace WebApi.Controllers
             };
             var operationDetails = await _tourService.ChangeTourInformation(tourDTO);
             return Ok(operationDetails);
+        }
+
+        [HttpGet]
+        [Route("guide/{userId}")]
+        public async Task<ActionResult> GetAllToursForGuide(string userId)
+        {
+            UserDTO user = await _userService.FindUserByIdAsync(userId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", userId);
+            IEnumerable <TourDTO> tours = await _tourService.GetGuideTours(userId);
+            Log.Information("Tours are got succesfully");
+            return Ok(tours);
         }
     }
 }

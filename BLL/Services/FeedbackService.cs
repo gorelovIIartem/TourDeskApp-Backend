@@ -84,6 +84,9 @@ namespace BLL.Services
             var feedback = DataBase.FeedbackManager.GetAll().Where(p => p.Id == feedbackDTO.Id).FirstOrDefault();
             if (feedback != null)
                 throw new ValidationException("This feedback already exists", "");
+            ApplicationUser user = await DataBase.UserManager.FindByIdAsync(feedbackDTO.UserId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", "");
             DataBase.FeedbackManager.Create(Mapper.Map<FeedbackDTO, Feedback>(feedbackDTO));
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Feedback added succesfully", "feedback");

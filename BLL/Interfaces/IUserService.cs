@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BLL.Infrastructure;
 using BLL.DTO;
+using DAL.Entities;
 
 namespace BLL.Interfaces
 {
@@ -17,6 +18,8 @@ namespace BLL.Interfaces
         Task<OperationDetails> ChangeProfileInformation(UserDTO userDTO);
         Task<OperationDetails> UploadImage(string photoUrl, string userId);
         Task<UserDTO> GetGuideByTourId(int tourId);
+
+        Task<IEnumerable<UserDTO>> GetAllUsers();
 
 
     }
