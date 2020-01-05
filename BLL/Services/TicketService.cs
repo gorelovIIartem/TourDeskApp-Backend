@@ -27,9 +27,10 @@ namespace BLL.Services
         }
 
 
-        public async Task<TicketDTO> BuyTicket(TicketDTO ticketDTO, int tourId)
+        public async Task<TicketDTO> BuyTicket(TicketDTO ticketDTO)
         {
-            TourDTO tour = Mapper.Map<TourDTO>(DataBase.TourManager.Get(tourId));
+            
+            TourDTO tour = Mapper.Map<TourDTO>(DataBase.TourManager.Get(ticketDTO.TourId));
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", tour.Name);
             if (ticketDTO == null)

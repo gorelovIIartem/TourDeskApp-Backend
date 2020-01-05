@@ -95,7 +95,7 @@ namespace WebApi.Controllers
                 Log.Warning($"User {userId} attached file with uncorrect format");
                 return BadRequest("The file format is wrong");
             }
-            var imageUrl = $"{Directory.GetCurrentDirectory()}/ProfileImages/{postedFile.FileName}";
+            var imageUrl = $@"C:\Users\gorel\source\repos\TDA-Frontend\src\assets\{postedFile.FileName}";
             using (var stream = new FileStream(imageUrl, FileMode.Create))
             {
                 postedFile.CopyTo(stream);

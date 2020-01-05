@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interfaces;
+using BLL.Infrastructure;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,10 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using WebApi.Models;
 using AutoMapper;
+using System.IO;
 
 namespace WebApi.Controllers
 {
-    [ Authorize(Roles ="user" , AuthenticationSchemes ="Bearer")]
+    //[ Authorize(Roles ="user" , AuthenticationSchemes ="Bearer")]
     [Route("api/tour")]
     [ApiController]
     public class TourController:ControllerBase
@@ -24,8 +26,8 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles ="admin")]
-        [Route("delete/{TourId}")]
+        //[Authorize(Roles ="admin")]
+        [Route("{tourId}")]
         public async Task<ActionResult> DeleteTour(int tourId)
         {
             var operationDetails = await _tourService.DeleteTour(tourId);
@@ -86,6 +88,32 @@ namespace WebApi.Controllers
             }
             Log.Information($"Sale for{userId} made succesfully");
             return Ok();
+        }
+
+        [HttpPut]
+        [Route("{tourId}/uploadImage")]
+        public async Task<ActionResult> UploadPhoto( int tourId)
+        {
+            var tour = _tourService.GetTour(tourId);
+            var postedFile = Request.Form.Files["Image"];
+            if (postedFile == null)
+            {
+                Log.Warning($"tour {tourId} did not attach the file. 404 returned");
+                return BadRequest("File has not been attached");
+            }
+            if ((postedFile.ContentType.Contains("jpg") || postedFile.ContentType.Contains("png") || postedFile.ContentType.Contains("jpeg")) == false)
+            {
+                Log.Warning($"Tour {tourId} attached file with uncorrect format");
+                return BadRequest("The file format is wrong");
+            }
+            var imageUrl = $@"C:\Users\gorel\source\repos\TDA-Frontend\src\assets\{postedFile.FileName}";
+            using (var stream = new FileStream(imageUrl, FileMode.Create))
+            {
+                postedFile.CopyTo(stream);
+            }
+            OperationDetails operationDetails = await _tourService.UploadImage(imageUrl, tour.Id);
+            Log.Information($"User {tour.Id} changed image");
+            return Ok(operationDetails);
         }
         
     }

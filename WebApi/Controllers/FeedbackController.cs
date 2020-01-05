@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.Interfaces;
+using WebApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ using System;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+   // [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
     [Route("api/feedbacks")]
     [ApiController]
     public class FeedbackController:ControllerBase
@@ -25,29 +26,62 @@ namespace WebApi.Controllers
             _feedbackService = feedbackService;
         }
 
+        //work
         [HttpGet]
-        [Route("feedbacks/userId/{UserId}")]
-        public async Task<ActionResult> GetFeedbacksByUserId(string  userId)
+        [Route("user/{UserId}")]
+        public async Task<ActionResult> GetFeedbacksByUserId(string userId)
         {
             ICollection<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksByUserId(userId);
             Log.Information($"Here are all feedbacks by this user {userId}");
             return Ok(feedbacks);
         }
 
+        //work
         [HttpGet]
-        [Route("feedbacks/tourId/{tourId}")]
+        [Route("tour/{tourId}")]
         public async Task<ActionResult> GetFeedbacksByTourId(int tourId)
         {
-            ICollection<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksByTourId(tourId);
+            IEnumerable<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksByTourId(tourId);
             Log.Information($"Here are all feedbacks by this tour {tourId}");
             return Ok(feedbacks);
         }
 
+        //work
+        [HttpGet]
+        [Route("sorted")]
         public async Task<ActionResult> GetFeedbacksSortedByDate(DateTime date)
         {
             ICollection<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksSortedByDate(date);
             Log.Information($"Here are feedbacks sorted by date{date}");
             return Ok(feedbacks);
+        }
+
+        //work
+        [HttpDelete]
+        [Route("{feedbackId}")]
+        public async Task<ActionResult> DeleteFeedback(int feedbackId)
+        {
+            var operationdetails = await _feedbackService.DeleteFeedback(feedbackId);
+            Log.Information($"Feedback {feedbackId} is deleted");
+            return Ok(operationdetails);
+        }
+
+        //work
+        [HttpPut]
+        public async Task<ActionResult> CreateFeedback([FromBody] FeedbackModel feedbackModel)
+        {
+            FeedbackDTO feedbackDTO = new FeedbackDTO
+            {
+                Id = feedbackModel.Id,
+                Content = feedbackModel.Content,
+                CreationDate = feedbackModel.CreationDate,
+                UserId = feedbackModel.UserId,
+                UserName = feedbackModel.UserName,
+                TourId = feedbackModel.TourId
+            };
+            var operationDetails = await _feedbackService.AddFeedback(feedbackDTO);
+            Log.Information($"Feedback {feedbackDTO.Id} is added succesfully");
+            return Ok(operationDetails);
         }
 
     }

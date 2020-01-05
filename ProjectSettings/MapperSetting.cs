@@ -10,6 +10,7 @@ namespace ProjectSettings
             CreateMap<UserDTO, User>().ReverseMap();
             CreateMap<TourDTO, Tour>().ReverseMap();
             CreateMap<TicketDTO, Ticket>().ReverseMap();
+            CreateMap<FeedbackDTO, Feedback>().ReverseMap();
         }
     }
 }

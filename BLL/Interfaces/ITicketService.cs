@@ -11,7 +11,7 @@ namespace BLL.Interfaces
     public interface ITicketService
     {
         int ShowNumberOfFreeTickets(TourDTO tourDTO);
-        Task<TicketDTO> BuyTicket(TicketDTO ticketDTO, int tourId);
+        Task<TicketDTO> BuyTicket(TicketDTO ticketDTO);
         Task<OperationDetails> ShowAllSoldTickets(DateTime date);
         TicketDTO GetTicket(int TicketId);
         Task<OperationDetails> DeleteTicket(string userID, int tourId);

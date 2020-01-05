@@ -91,7 +91,7 @@ namespace BLL.Services
             return Mapper.Map<Tour, TourDTO>(tour);
         }
 
-        public async Task<OperationDetails> UploadImage(int tourId, string imageUrl)
+        public async Task<OperationDetails> UploadImage(string imageUrl, int tourId)
         {
             Tour tour = DataBase.TourManager.Get(tourId);
             if (tour == null)

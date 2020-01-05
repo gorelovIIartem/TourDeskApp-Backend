@@ -22,12 +22,12 @@ namespace BLL.Services
         public async Task<OperationDetails> CreateUserAsync(UserDTO userDTO)
         {
 
-            await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
-            await Database.SaveAsync();
+            //await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
+            //await Database.SaveAsync();
 
             if (userDTO == null) throw new ValidationException("UserDTO is null", "");
             ApplicationUser user = await Database.UserManager.FindByNameAsync(userDTO.UserName);
-          //  if (user != null) throw new ValidationException("UserWith this login already exists", userDTO.UserName);
+            if (user != null) throw new ValidationException("UserWith this login already exists", userDTO.UserName);
             user = new ApplicationUser { UserName = userDTO.UserName };
             var result = await Database.UserManager.CreateAsync(user, userDTO.Password);
             if (result.Errors.Count() > 0) return new OperationDetails(false, string.Join(",", result.Errors.Select(p => p.Description)), null);
@@ -123,7 +123,8 @@ namespace BLL.Services
                 Age = profile.Age,
                 UserName = user.UserName,
                 Password = profile.User.Password,
-                Id = user.Id
+                Id = user.Id,
+                ImageUrl = profile.ImageUrl
             };
         }
        

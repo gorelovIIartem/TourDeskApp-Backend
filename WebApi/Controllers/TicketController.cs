@@ -27,10 +27,10 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> BuyTicket([FromBody] TicketModel model, int tourId)
+        public async Task<ActionResult> BuyTicket([FromBody] TicketModel model)
         {
             TicketDTO ticket = Mapper.Map<TicketModel, TicketDTO>(model);
-            var purchase = await _ticketService.BuyTicket(ticket, tourId);
+            var purchase = await _ticketService.BuyTicket(ticket);
             return Ok();
         }
 
@@ -56,6 +56,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult> CancelPurchase(string userId, int tourId)
         {
             await _ticketService.DeleteTicket(userId, tourId);
+            Log.Information($"You canceled this trip {tourId}");
             return Ok();
         }
 

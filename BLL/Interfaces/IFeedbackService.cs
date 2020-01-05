@@ -12,6 +12,7 @@ namespace BLL.Interfaces
         Task<ICollection<FeedbackDTO>> GetAllFeedbacksByTourId(int tourId);
         FeedbackDTO GetFeedback(int FeedbackId);
         Task<OperationDetails> DeleteFeedback(int FeedbackId);
+        Task<OperationDetails> AddFeedback(FeedbackDTO feedbackDTO);
 
     }
 }

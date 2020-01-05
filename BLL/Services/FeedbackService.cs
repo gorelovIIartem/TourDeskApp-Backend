@@ -49,9 +49,13 @@ namespace BLL.Services
             var tour = DataBase.TourManager.Get(tourId);
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", "");
-            ICollection<FeedbackDTO> feedbackDTO = null;
-            Mapper.Map<ICollection<FeedbackDTO>>(DataBase.FeedbackManager.GetAll().Where(p => p.TourId == tourId));
-            return feedbackDTO;
+            List<FeedbackDTO> feedbackList = new List<FeedbackDTO>();
+            ICollection<FeedbackDTO> feedbackDTO = Mapper.Map<ICollection<FeedbackDTO>>(DataBase.FeedbackManager.GetAll().Where(p => p.TourId == tourId));
+            foreach(var feedbacks in feedbackDTO)
+            {
+                feedbackList.Add(feedbacks);
+            }
+            return feedbackList;
         }
 
         public FeedbackDTO GetFeedback(int FeedbackId)
@@ -72,5 +76,18 @@ namespace BLL.Services
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Succes deleted", "feedback");
         }
+
+        public async Task<OperationDetails> AddFeedback(FeedbackDTO feedbackDTO)
+        {
+            if (feedbackDTO == null)
+                throw new ValidationException("There is no information about this feedback", "");
+            var feedback = DataBase.FeedbackManager.GetAll().Where(p => p.Id == feedbackDTO.Id).FirstOrDefault();
+            if (feedback != null)
+                throw new ValidationException("This feedback already exists", "");
+            DataBase.FeedbackManager.Create(Mapper.Map<FeedbackDTO, Feedback>(feedbackDTO));
+            await DataBase.SaveAsync();
+            return new OperationDetails(true, "Feedback added succesfully", "feedback");
+        }
+       
     }
 }
