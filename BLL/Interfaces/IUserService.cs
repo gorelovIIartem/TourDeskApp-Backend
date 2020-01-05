@@ -16,7 +16,8 @@ namespace BLL.Interfaces
         Task<UserDTO> FindUserByIdAsync(string userId);
         Task<OperationDetails> ChangeProfileInformation(UserDTO userDTO);
         Task<OperationDetails> UploadImage(string photoUrl, string userId);
+        Task<UserDTO> GetGuideByTourId(int tourId);
 
-        
+
     }
 }

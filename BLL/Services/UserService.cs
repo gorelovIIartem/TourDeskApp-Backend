@@ -7,6 +7,7 @@ using DAL.Entities;
 using DAL.Interfaces;
 using System.Threading.Tasks;
 using System.Linq;
+using AutoMapper;
 
 namespace BLL.Services
 {
@@ -183,6 +184,29 @@ namespace BLL.Services
             Database.ProfileManager.Update(userProfile);
             await Database.SaveAsync();
             return new OperationDetails(true, photoUrl, "profile");
+        }
+
+        public async Task<UserDTO> GetGuideByTourId(int tourId)
+        {
+            TourDTO tourDTO = Mapper.Map<TourDTO>(Database.TourManager.Get(tourId));
+            if (tourDTO == null)
+                throw new ValidationException("There is no information about this tour", $"{tourId}");
+            ApplicationUser user = await Database.UserManager.FindByIdAsync(tourDTO.UserId);
+            if (user == null)
+                throw new ValidationException($"There is no information about this user {user.Id} in tour", "");
+            UserProfile profile = user.User.UserProfile;
+            return new UserDTO
+            {
+                FullName = profile.FullName,
+                Age = profile.Age,
+                Birthday = profile.Birthday,
+                Email = profile.Email,
+                Address = profile.Address,
+                Phone = profile.Phone,
+                ImageUrl = profile.ImageUrl,
+                Id = user.Id,
+                UserName = user.UserName
+            };
         }
     }
 }

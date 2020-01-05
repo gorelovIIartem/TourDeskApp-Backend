@@ -115,6 +115,53 @@ namespace WebApi.Controllers
             Log.Information($"User {tour.Id} changed image");
             return Ok(operationDetails);
         }
+
+        [HttpGet]
+        [Route("guide/{tourId}")]
+        public async Task<ActionResult> FindGuideForTour(int tourid)
+        {
+            var tour = _tourService.GetTour(tourid);
+            if (tour == null)
+                throw new ValidationException("There is no information about this tour", "Incorrect Id");
+            UserDTO userDTO = await _userService.GetGuideByTourId(tourid);
+            Log.Information($"Here is guide {userDTO.Id} for this tour");
+            return Ok(userDTO);
+        }
         
+        [HttpPut]
+        [Route("guide/{userId}")]
+        public async Task<ActionResult> MakeGuideForTour(int tourId, string userId)
+        {
+            var tour = _tourService.GetTour(tourId);
+            if (tour == null)
+                throw new ValidationException("There is no information about this tour", $"{tourId}");
+            var user = await _userService.FindUserByIdAsync(userId);
+            if (user == null)
+                throw new ValidationException("There is no information about this user", userId);
+            var operationDetails = await _tourService.MakeGuide(tourId, userId);
+            Log.Information("Guide ", userId);
+            return Ok(operationDetails);
+        }
+
+        [HttpPut]
+        [Route("{tourId}")]
+        public async Task<ActionResult> ChangeTour([FromBody] TourModel tourModel)
+        {
+            TourDTO tourDTO = new TourDTO
+            {
+                Name = tourModel.Name,
+                Location = tourModel.Location,
+                City = tourModel.City,
+                Description = tourModel.Description,
+                Date = tourModel.Date,
+                ImageUrl = tourModel.ImageUrl,
+                PlacesCount = tourModel.PlacesCount,
+                UserId = tourModel.UserId,
+                Id = tourModel.Id,
+                Price = tourModel.Price
+            };
+            var operationDetails = await _tourService.ChangeTourInformation(tourDTO);
+            return Ok(operationDetails);
+        }
     }
 }

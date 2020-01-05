@@ -122,5 +122,19 @@ namespace BLL.Services
             allTours = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll());
             return allTours;
         }
+
+        public async Task<OperationDetails> MakeGuide(int tourId, string userId)
+        {
+            TourDTO tourDTO =Mapper.Map<TourDTO>(DataBase.TourManager.Get(tourId));
+            if (tourDTO == null)
+                throw new ValidationException("There is no information about this tour", $"{tourId}");
+            UserDTO userDTO = Mapper.Map<UserDTO>(DataBase.QUserManager.Get(userId));
+            if (userDTO == null)
+                throw new ValidationException("There is no information about this user", userId);
+            tourDTO.UserId = userId;
+            DataBase.TourManager.Update(Mapper.Map<Tour>(tourDTO));
+            await DataBase.SaveAsync();
+            return new OperationDetails(true, "Guide for this tour updated", "Tour");
+        }
     }
 }

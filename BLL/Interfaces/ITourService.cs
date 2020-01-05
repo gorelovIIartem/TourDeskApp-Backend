@@ -15,5 +15,6 @@ namespace BLL.Interfaces
         Task<OperationDetails> ChangeTourInformation(TourDTO tour);
         IEnumerable<TourDTO> GetAllTours();
         TourDTO GetTour(int tourId);
+        Task<OperationDetails> MakeGuide(int tourId, string userId);
     }
 }
