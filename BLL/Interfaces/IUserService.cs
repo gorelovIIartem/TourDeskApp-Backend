@@ -19,7 +19,7 @@ namespace BLL.Interfaces
         Task<OperationDetails> UploadImage(string photoUrl, string userId);
         Task<UserDTO> GetGuideByTourId(int tourId);
 
-        Task<IEnumerable<UserDTO>> GetAllUsers();
+        IEnumerable<UserDTO> GetAllUsers();
 
 
     }

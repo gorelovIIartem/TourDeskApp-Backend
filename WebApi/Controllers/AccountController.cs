@@ -10,6 +10,7 @@ using BLL.Services;
 using Serilog;
 using System.IO;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace WebApi.Controllers
 {
@@ -110,7 +111,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult> GetUsers()
         {
-            IEnumerable<UserDTO> users = await _userService.GetAllUsers();
+            IEnumerable<UserDTO> users = _userService.GetAllUsers();
             Log.Information("All users");
             return Ok(users);
         }

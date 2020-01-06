@@ -19,15 +19,15 @@ namespace BLL.Services
         {
             DataBase = uow;
         }
-        public IEnumerable<TourDTO> GetToursUserVisited(string userId)
+        public IEnumerable<DTO.TourDTO> GetToursUserVisited(string userId)
         {
             ICollection<TicketDTO> tickets = null;
                 var user =  DataBase.ProfileManager.Get(userId);
             if (user == null)
                     throw new ValidationException("User is not found", "Id");
                 tickets = Mapper.Map<ICollection<TicketDTO>>(DataBase.TicketManager.GetAll().Where(p=>p.UserId==userId));
-            ICollection < TourDTO > tours = Mapper.Map<ICollection<TourDTO>>(DataBase.TourManager.GetAll());
-            List<TourDTO> visitedtours = new List<TourDTO>();
+            ICollection<DTO.TourDTO> tours = Mapper.Map<ICollection<DTO.TourDTO>>(DataBase.TourManager.GetAll());
+            List<DTO.TourDTO> visitedtours = new List<DTO.TourDTO>();
             foreach(var ticket in tickets)
             {
                 foreach(var tour in tours)
@@ -121,23 +121,23 @@ namespace BLL.Services
             return new OperationDetails(true, "Tour successfully changed", "Tour");
         }
 
-        public IEnumerable<TourDTO> GetAllTours()
+        public IEnumerable<DTO.TourDTO> GetAllTours()
         {
-            IEnumerable<TourDTO> allTours = null;
+            IEnumerable<DTO.TourDTO> allTours = null;
             allTours = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll());
             return allTours;
         }
 
         public async Task<OperationDetails> MakeGuide(int tourId, string userId)
         {
-            TourDTO tourDTO =Mapper.Map<TourDTO>(DataBase.TourManager.Get(tourId));
-            if (tourDTO == null)
+            Tour tour = DataBase.TourManager.Get(tourId);
+            if (tour == null)
                 throw new ValidationException("There is no information about this tour", $"{tourId}");
             UserDTO userDTO = Mapper.Map<UserDTO>(DataBase.QUserManager.Get(userId));
             if (userDTO == null)
                 throw new ValidationException("There is no information about this user", userId);
-            tourDTO.UserId = userId;
-            DataBase.TourManager.Update(Mapper.Map<Tour>(tourDTO));
+            tour.UserId = userId;
+            DataBase.TourManager.Update(tour);
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Guide for this tour updated", "Tour");
         }
@@ -148,7 +148,7 @@ namespace BLL.Services
             if (user == null)
                 throw new ValidationException("There is no information about this user", "Incorrect id");
             List<TourDTO> tours = new List<TourDTO>();
-            IEnumerable<TourDTO> tourDTOs = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll().Where(p => p.UserId == userId));
+            IEnumerable<TourDTO> tourDTOs = Mapper.Map<IEnumerable<DTO.TourDTO>>(DataBase.TourManager.GetAll().Where(p => p.UserId == userId));
             foreach(var toursIE in tourDTOs)
             {
                 tours.Add(toursIE);

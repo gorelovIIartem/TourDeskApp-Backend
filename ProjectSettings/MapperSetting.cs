@@ -8,10 +8,10 @@ namespace ProjectSettings
         public MapperSettings()
         {
             CreateMap<UserDTO, User>().ReverseMap();
-            CreateMap<TourDTO, Tour>().ReverseMap();
+            CreateMap<Tour, TourDTO>().ReverseMap();
             CreateMap<TicketDTO, Ticket>().ReverseMap();
             CreateMap<FeedbackDTO, Feedback>().ReverseMap();
-            CreateMap<User, UserProfile>().ReverseMap();
+            CreateMap<UserDTO, UserProfile>().ReverseMap();
         }
     }
 }

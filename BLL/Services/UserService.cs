@@ -91,20 +91,6 @@ namespace BLL.Services
             Database.QUserManager.Delete(userId);
             await Database.UserManager.DeleteAsync(user);
             await Database.SaveAsync();
-          
-
-
-            //await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("deleted"));
-            //await Database.SaveAsync();
-
-            //ApplicationUser user = await Database.UserManager.FindByIdAsync(userId);
-            //if (user == null) throw new ValidationException("User not found", "");
-            //var UserRoles = this.GetRolesByUserId(userId);
-            //if (UserRoles.Result.Contains("deleted") == false)
-            //{
-            //    await Database.UserManager.AddToRoleAsync(user, "deleted");
-            //}
-            //else throw new ValidationException("User already deleted", "");
             return new OperationDetails(true, "Successfully deleted", userId);
         }
 
@@ -208,30 +194,10 @@ namespace BLL.Services
                 UserName = user.UserName
             };
         }
-        public async Task<IEnumerable<UserDTO>> GetAllUsers()
+        public IEnumerable<UserDTO> GetAllUsers()
         {
-            List<UserDTO> users = null;
-            await Task.Run(() =>
-            {
-                List<UserProfile> boofUsers = Mapper.Map<List<UserProfile>>(Database.QUserManager.GetAll());
-
-                foreach(var boofUser in boofUsers)
-                {
-                    UserProfile userProfile;
-                    userProfile = boofUser.User.UserProfile;
-                    users.Add(new UserDTO()
-                    {
-                        FullName = userProfile.FullName,
-                        Id =  boofUser.UserId,
-                        Address = userProfile.Address,
-                        Age = userProfile.Age,
-                        ImageUrl = userProfile.ImageUrl,
-                        Phone = userProfile.Phone,
-                        Birthday = userProfile.Birthday
-                    });
-                }
-            });
-            return users;
+            IEnumerable<UserDTO> boofUsers = Mapper.Map<IEnumerable<UserDTO>>( Database.QUserManager.GetAll());
+            return boofUsers;
         }
 
     }

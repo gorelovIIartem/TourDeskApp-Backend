@@ -116,20 +116,20 @@ namespace WebApi.Controllers
             return Ok(operationDetails);
         }
 
-        [HttpGet]
-        [Route("guide/{tourId}")]
-        public async Task<ActionResult> FindGuideForTour(int tourid)
-        {
-            var tour = _tourService.GetTour(tourid);
-            if (tour == null)
-                throw new ValidationException("There is no information about this tour", "Incorrect Id");
-            UserDTO userDTO = await _userService.GetGuideByTourId(tourid);
-            Log.Information($"Here is guide {userDTO.Id} for this tour");
-            return Ok(userDTO);
-        }
+        //[HttpGet]
+        //[Route("guide/{tourId}")]
+        //public async Task<ActionResult> FindGuideForTour(int tourid)
+        //{
+        //    var tour = _tourService.GetTour(tourid);
+        //    if (tour == null)
+        //        throw new ValidationException("There is no information about this tour", "Incorrect Id");
+        //    UserDTO userDTO = await _userService.GetGuideByTourId(tourid);
+        //    Log.Information($"Here is guide {userDTO.Id} for this tour");
+        //    return Ok(userDTO);
+        //}
         
         [HttpPut]
-        [Route("guide/{userId}")]
+        [Route("guide/{tourId}/{userId}")]
         public async Task<ActionResult> MakeGuideForTour(int tourId, string userId)
         {
             var tour = _tourService.GetTour(tourId);

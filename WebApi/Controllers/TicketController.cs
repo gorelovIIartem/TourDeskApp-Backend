@@ -35,7 +35,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetNumberOfFreeTickets(TourDTO tourDTO)
+        public async Task<ActionResult> GetNumberOfFreeTickets(BLL.DTO.TourDTO tourDTO)
         {
             int freeTickets =  _ticketService.ShowNumberOfFreeTickets(tourDTO);
             Log.Information($"Here are {freeTickets} free tickets");
