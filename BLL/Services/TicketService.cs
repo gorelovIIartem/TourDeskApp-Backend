@@ -18,13 +18,6 @@ namespace BLL.Services
         {
             DataBase = uow;
         }
-        public int ShowNumberOfFreeTickets(TourDTO tourDTO)
-        {
-            if (tourDTO == null)
-                throw new ValidationException("There is no information about this tour", "");
-            int numberOfFreeTickets = tourDTO.PlacesCount;
-            return numberOfFreeTickets;
-        }
 
 
         public async Task<TicketDTO> BuyTicket(TicketDTO ticketDTO)
@@ -53,39 +46,9 @@ namespace BLL.Services
             return Mapper.Map<TicketDTO>(ticket);
 
         }
-       
-
-        public async Task<OperationDetails> ShowAllSoldTickets(DateTime date)
-        {
-            ICollection<TicketDTO> tickets = null;
-            await Task.Run(() =>
-            {
-                var soldtickets = DataBase.TicketManager.GetAll().Where(p => p.PurchaseDate == date);
-                foreach (var p in soldtickets)
-                {
-                    tickets.Add(Mapper.Map<Ticket, TicketDTO>(p));
-                }
-                return tickets;
-            });
-            return new OperationDetails(true, "Tickets are got succesfully", "ticket");
-
-        }
-
-
-
-
         public void Dispose()
         {
             DataBase.Dispose();
-        }
-
-        public TicketDTO GetTicket(int TicketId)
-        {
-            TicketDTO ticket = null;
-            Ticket ticketBoof = DataBase.TicketManager.Get(TicketId);
-            if (ticketBoof != null)
-                ticket = Mapper.Map<Ticket, TicketDTO>(ticketBoof);
-            return ticket;
         }
 
         public async Task<OperationDetails> DeleteTicket(string userId, int tourId)

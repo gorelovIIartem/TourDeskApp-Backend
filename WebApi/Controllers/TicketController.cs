@@ -17,12 +17,10 @@ namespace WebApi.Controllers
     public class TicketController:ControllerBase
     {
         private ITicketService _ticketService;
-        private ITourService _tourService;
 
-        public TicketController(ITicketService ticketService, ITourService tourService)
+        public TicketController(ITicketService ticketService)
         {
             _ticketService = ticketService;
-            _tourService = tourService;
         }
 
         [HttpPost]
@@ -30,7 +28,7 @@ namespace WebApi.Controllers
         {
             TicketDTO ticket = Mapper.Map<TicketModel, TicketDTO>(model);
             var purchase = await _ticketService.BuyTicket(ticket);
-            return Ok();
+            return Ok(purchase);
         }
 
         [HttpDelete]

@@ -10,10 +10,16 @@ namespace BLL.Interfaces
 {
     public interface ITicketService
     {
-        int ShowNumberOfFreeTickets(TourDTO tourDTO);
+        /// <summary>
+        /// Add new ticket.
+        /// </summary>
+        /// <param name="ticketDTO"> Ticket wich will be added.</param>
         Task<TicketDTO> BuyTicket(TicketDTO ticketDTO);
-        Task<OperationDetails> ShowAllSoldTickets(DateTime date);
-        TicketDTO GetTicket(int TicketId);
+        /// <summary>
+        /// Delete ticket.
+        /// </summary>
+        /// <param name="userID"> Part of composite key. Ticket with this id of user will be deleted.</param>
+        /// <param name="tourId"> Part of composite key. Ticket with this id of tour will be deleted.</param>
         Task<OperationDetails> DeleteTicket(string userID, int tourId);
     }
 }

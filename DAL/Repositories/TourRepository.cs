@@ -29,7 +29,7 @@ namespace DAL.Repositories
 
         public void Delete(Tour item)
         {
-            throw new System.NotImplementedException();
+            _database.Remove(item);
         }
 
         public Tour Get(int id)

@@ -29,7 +29,7 @@ namespace DAL.Repositories
 
         public void Delete(UserProfile item)
         {
-            throw new System.NotImplementedException();
+            _database.Remove(item);
         }
 
         public UserProfile Get(string id)

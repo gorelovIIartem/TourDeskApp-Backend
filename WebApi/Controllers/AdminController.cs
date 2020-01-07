@@ -74,14 +74,17 @@ namespace WebApi.Controllers
         [Route("{tourId}/{userId}")]
         public async Task<ActionResult> MakeGuideForTour(int tourId, string userId)
         {
-            TourDTO tour = await _tourService.GetTour(tourId);
+            TourDTO tour = _tourService.GetTour(tourId);
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", $"{tourId}");
-            if (tour.UserId != null)
-                throw new ValidationException("This tour has already guide!", tour.UserId);
             var user = await _userService.FindUserByIdAsync(userId);
             if (user == null)
                 throw new ValidationException("There is no information about this user", userId);
+            if (tour.UserId != null)
+            {
+                Log.Warning("This tour already has guide");
+                return BadRequest("Tour already has guide");
+            }
             var operationDetails = await _tourService.MakeGuide(tourId, userId);
             Log.Information("Guide ", userId);
             return Ok(operationDetails);
@@ -103,7 +106,6 @@ namespace WebApi.Controllers
         [Route("{tourId}/uploadImage")]
         public async Task<ActionResult> UploadPhoto(int tourId)
         {
-            var tour = _tourService.GetTour(tourId);
             var postedFile = Request.Form.Files["Image"];
             if (postedFile == null)
             {
@@ -120,8 +122,8 @@ namespace WebApi.Controllers
             {
                 postedFile.CopyTo(stream);
             }
-            OperationDetails operationDetails = await _tourService.UploadImage(imageUrl, tour.Id);
-            Log.Information($"User {tour.Id} changed image");
+            OperationDetails operationDetails = await _tourService.UploadImage(imageUrl, tourId);
+            Log.Information($"User {tourId} changed image");
             return Ok(operationDetails);
         }
 

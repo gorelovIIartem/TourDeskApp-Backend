@@ -19,7 +19,7 @@ namespace BLL.Services
         {
             DataBase = uow;
         }
-        public IEnumerable<DTO.TourDTO> GetToursUserVisited(string userId)
+        public IEnumerable<TourDTO> GetToursUserVisited(string userId)
         {
             ICollection<TicketDTO> tickets = null;
                 var user =  DataBase.ProfileManager.Get(userId);
@@ -88,12 +88,11 @@ namespace BLL.Services
             DataBase.Dispose();
         }
 
-        public async Task<TourDTO> GetTour(int tourId)
+        public TourDTO GetTour(int tourId)
         {
             var tour = DataBase.TourManager.Get(tourId);
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", "tour");
-            ApplicationUser user = await DataBase.UserManager.FindByIdAsync(tour.UserId);
             return Mapper.Map<Tour, TourDTO>(tour);
         }
 
@@ -122,10 +121,9 @@ namespace BLL.Services
             return new OperationDetails(true, "Tour successfully changed", "Tour");
         }
 
-        public IEnumerable<DTO.TourDTO> GetAllTours()
+        public IEnumerable<TourDTO> GetAllTours()
         {
-            IEnumerable<DTO.TourDTO> allTours = null;
-            allTours = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll());
+           IEnumerable<TourDTO> allTours = Mapper.Map<IEnumerable<TourDTO>>(DataBase.TourManager.GetAll());
             return allTours;
         }
 

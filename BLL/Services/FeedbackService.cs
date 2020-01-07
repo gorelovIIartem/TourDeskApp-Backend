@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class FeedbackService : IFeedbackService
+    public class FeedbackService : IFeedbackService, IDisposable
     {
         private readonly IUnitOfWork DataBase;
 
@@ -21,15 +21,6 @@ namespace BLL.Services
             DataBase = uow;
         }
 
-        public async Task<ICollection<FeedbackDTO>> GetAllFeedbacksSortedByDate(DateTime date)
-        {
-            ICollection<FeedbackDTO> feedbackDTO = null;
-            await Task.Run(() =>
-            {
-                feedbackDTO = Mapper.Map<ICollection<FeedbackDTO>>(DataBase.FeedbackManager.GetAll().Where(p => p.CreationDate == date));
-            });
-            return feedbackDTO;
-        }
 
         public async Task<ICollection<FeedbackDTO>> GetAllFeedbacksByUserId(string userId)
         {
@@ -44,7 +35,7 @@ namespace BLL.Services
             return feedbackDTO;
         }
 
-        public async Task<ICollection<FeedbackDTO>> GetAllFeedbacksByTourId(int tourId)
+        public ICollection<FeedbackDTO> GetAllFeedbacksByTourId(int tourId)
         {
             var tour = DataBase.TourManager.Get(tourId);
             if (tour == null)
@@ -91,6 +82,11 @@ namespace BLL.Services
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Feedback added succesfully", "feedback");
         }
-       
+
+        public void Dispose()
+        {
+            DataBase.Dispose();
+        }
+
     }
 }

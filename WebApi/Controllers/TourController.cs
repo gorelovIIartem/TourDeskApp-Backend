@@ -19,15 +19,12 @@ namespace WebApi.Controllers
     public class TourController:ControllerBase
     {
         private ITourService _tourService;
-        private IUserService _userService;
-        public TourController(ITourService tourService, IUserService userService)
+        public TourController(ITourService tourService)
         {
             _tourService = tourService;
-            _userService = userService;
         }
 
         [HttpDelete]
-        //[Authorize(Roles ="admin")]
         [Route("{tourId}")]
         public async Task<ActionResult> DeleteTour(int tourId)
         {
@@ -38,9 +35,9 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Route("{tourId}")]
-        public async Task<ActionResult> GetTour(int tourId)
+        public IActionResult GetTour(int tourId)
         {
-            TourDTO tour = await _tourService.GetTour(tourId);
+            TourDTO tour = _tourService.GetTour(tourId);
             Log.Information($"Your tour with id: {tourId}");
             return Ok(tour);
         }

@@ -10,23 +10,18 @@ using System;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "user, admin", AuthenticationSchemes = "Bearer")]
     [Route("api/feedbacks")]
     [ApiController]
     public class FeedbackController:ControllerBase
     {
-        private IUserService _userService;
-        private ITicketService _ticketService;
         private IFeedbackService _feedbackService;
 
-        public FeedbackController(IUserService userService, ITicketService ticketService, IFeedbackService feedbackService)
+        public FeedbackController(IFeedbackService feedbackService)
         {
-            _userService = userService;
-            _ticketService = ticketService;
             _feedbackService = feedbackService;
         }
 
-        //work
         [HttpGet]
         [Route("user/{UserId}")]
         public async Task<ActionResult> GetFeedbacksByUserId(string userId)
@@ -36,37 +31,24 @@ namespace WebApi.Controllers
             return Ok(feedbacks);
         }
 
-        //work
         [HttpGet]
         [Route("tour/{tourId}")]
-        public async Task<ActionResult> GetFeedbacksByTourId(int tourId)
+        public IActionResult GetFeedbacksByTourId(int tourId)
         {
-            IEnumerable<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksByTourId(tourId);
+            IEnumerable<FeedbackDTO> feedbacks = _feedbackService.GetAllFeedbacksByTourId(tourId);
             Log.Information($"Here are all feedbacks by this tour {tourId}");
             return Ok(feedbacks);
         }
 
-        //work
-        [HttpGet]
-        [Route("sorted")]
-        public async Task<ActionResult> GetFeedbacksSortedByDate(DateTime date)
-        {
-            ICollection<FeedbackDTO> feedbacks = await _feedbackService.GetAllFeedbacksSortedByDate(date);
-            Log.Information($"Here are feedbacks sorted by date{date}");
-            return Ok(feedbacks);
-        }
-
-        //work
         [HttpDelete]
         [Route("{feedbackId}")]
-        public async Task<ActionResult> DeleteFeedback(int feedbackId)
+       public async Task<ActionResult> DeleteFeedback(int feedbackId)
         {
             var operationdetails = await _feedbackService.DeleteFeedback(feedbackId);
             Log.Information($"Feedback {feedbackId} is deleted");
             return Ok(operationdetails);
         }
 
-        //work
         [HttpPut]
         public async Task<ActionResult> CreateFeedback([FromBody] FeedbackModel feedbackModel)
         {
