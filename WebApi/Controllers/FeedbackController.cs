@@ -56,7 +56,7 @@ namespace WebApi.Controllers
             {
                 Id = feedbackModel.Id,
                 Content = feedbackModel.Content,
-                CreationDate = feedbackModel.CreationDate,
+                CreationDate = DateTime.Now,
                 UserId = feedbackModel.UserId,
                 UserName = feedbackModel.UserName,
                 TourId = feedbackModel.TourId
