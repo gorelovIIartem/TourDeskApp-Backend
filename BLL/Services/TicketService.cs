@@ -30,7 +30,7 @@ namespace BLL.Services
         public async Task<TicketDTO> BuyTicket(TicketDTO ticketDTO)
         {
             
-            TourDTO tour = Mapper.Map<TourDTO>(DataBase.TourManager.Get(ticketDTO.TourId));
+            Tour tour = DataBase.TourManager.Get(ticketDTO.TourId);
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", tour.Name);
             if (ticketDTO == null)
@@ -98,6 +98,7 @@ namespace BLL.Services
                 throw new ValidationException("There is no information about this tour", "");
             Ticket ticket = DataBase.TicketManager.GetAll().Where(p => p.UserId == userId && p.TourId == tourId).FirstOrDefault();
             DataBase.TicketManager.Delete(ticket);
+            tour.PlacesCount++;
             await DataBase.SaveAsync();
             return new OperationDetails(true, "Ticket deleted successfully", "ticket");
         }

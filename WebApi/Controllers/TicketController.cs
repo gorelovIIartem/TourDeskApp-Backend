@@ -11,14 +11,13 @@ using DAL.Entities;
 
 namespace WebApi.Controllers
 {
-   // [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
     [Route("api/ticket")]
     [ApiController]
     public class TicketController:ControllerBase
     {
         private ITicketService _ticketService;
         private ITourService _tourService;
-        private IUserService _userService;
 
         public TicketController(ITicketService ticketService, ITourService tourService)
         {
@@ -32,23 +31,6 @@ namespace WebApi.Controllers
             TicketDTO ticket = Mapper.Map<TicketModel, TicketDTO>(model);
             var purchase = await _ticketService.BuyTicket(ticket);
             return Ok();
-        }
-
-        [HttpGet]
-        public async Task<ActionResult> GetNumberOfFreeTickets(BLL.DTO.TourDTO tourDTO)
-        {
-            int freeTickets =  _ticketService.ShowNumberOfFreeTickets(tourDTO);
-            Log.Information($"Here are {freeTickets} free tickets");
-            return Ok(freeTickets);
-        }
-
-        [HttpGet]
-        [Route("tickets/soldTickets/{tourId}")]
-        public async Task<ActionResult> ShowNumberOfSoldTickets(DateTime date)
-        {
-            var tickets = await _ticketService.ShowAllSoldTickets(date);
-            Log.Information($"Here are all sold tickets for {date}");
-            return Ok(tickets);
         }
 
         [HttpDelete]

@@ -14,15 +14,17 @@ using AutoMapper;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "user", AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "user, admin", AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
         public IUserService _userService;
-        public AccountController(IUserService userService)
+        public ITourService _tourService;
+        public AccountController(IUserService userService, ITourService tourService)
         {
             _userService = userService;
+            _tourService = tourService;
         }
 
         [ModelValidationFilter]
@@ -37,12 +39,13 @@ namespace WebApi.Controllers
                 Password = model.Password,
                 UserName = model.UserName,
                 FullName = model.FullName,
-                Roles = new string[] { "user" }
+                Role = "user"
             };
             OperationDetails operationDetails = await _userService.CreateUserAsync(userDTO);
             Log.Information($"User{userDTO.UserName} has been registered");
             return Ok(operationDetails);
         }
+
         [HttpDelete]
         [CheckCurrentUserFilter]
         [Route("delete/{userId}")]
@@ -52,9 +55,9 @@ namespace WebApi.Controllers
             Log.Information($"User{userId} has been deleted");
             return Ok();
         }
+
         [HttpGet]
         [Route("{userId}")]
-        [CheckCurrentUserFilter]
         public async Task<ActionResult> GetUser(string userId)
         {
             var user =  await _userService.FindUserByIdAsync(userId);
@@ -111,7 +114,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult> GetUsers()
         {
-            IEnumerable<UserDTO> users = _userService.GetAllUsers();
+            IEnumerable<UserDTO> users = await _userService.GetAllUsers();
             Log.Information("All users");
             return Ok(users);
         }

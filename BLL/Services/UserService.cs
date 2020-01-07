@@ -23,7 +23,7 @@ namespace BLL.Services
         public async Task<OperationDetails> CreateUserAsync(UserDTO userDTO)
         {
 
-            await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("user"));
+            await Database.RoleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("admin"));
             await Database.SaveAsync();
 
             if (userDTO == null) throw new ValidationException("UserDTO is null", "");
@@ -32,13 +32,8 @@ namespace BLL.Services
             user = new ApplicationUser { UserName = userDTO.UserName };
             var result = await Database.UserManager.CreateAsync(user, userDTO.Password);
             if (result.Errors.Count() > 0) return new OperationDetails(false, string.Join(",", result.Errors.Select(p => p.Description)), null);
-            if (userDTO.Roles.Count() > 0)
-            {
-                foreach (var role in userDTO.Roles)
-                {
-                    await Database.UserManager.AddToRoleAsync(user, role);
-                }
-            }
+                    await Database.UserManager.AddToRoleAsync(user, userDTO.Role);
+
             User Quser = new User()
             {
                 ApplicationUser = user,
@@ -89,6 +84,23 @@ namespace BLL.Services
             if (user == null)
                 throw new ValidationException("User is not found", userId);
             Database.QUserManager.Delete(userId);
+            IEnumerable<Feedback> feedbacks = Database.FeedbackManager.GetAll().Where(p => p.UserId == userId);
+            foreach (var feedback in feedbacks)
+            {
+                Database.FeedbackManager.Delete(feedback);
+            }
+            IEnumerable<Tour> tours = Database.TourManager.GetAll().Where(p => p.UserId == userId);
+            foreach (var tour in tours)
+            {
+                tour.UserId = null;
+            }
+            IEnumerable<Ticket> tickets = Database.TicketManager.GetAll().Where(p => p.UserId == userId);
+            foreach(var ticket in tickets)
+            {
+                Tour tour = Database.TourManager.Get(ticket.TourId);
+                Database.TicketManager.Delete(ticket);
+                tour.PlacesCount++;
+            }
             await Database.UserManager.DeleteAsync(user);
             await Database.SaveAsync();
             return new OperationDetails(true, "Successfully deleted", userId);
@@ -111,7 +123,8 @@ namespace BLL.Services
                 UserName = user.UserName,
                 Password = profile.User.Password,
                 Id = user.Id,
-                ImageUrl = profile.ImageUrl
+                ImageUrl = profile.ImageUrl,
+                Role = (await Database.UserManager.GetRolesAsync(user)).FirstOrDefault()
             };
         }
        
@@ -194,10 +207,28 @@ namespace BLL.Services
                 UserName = user.UserName
             };
         }
-        public IEnumerable<UserDTO> GetAllUsers()
+        public async Task<IEnumerable<UserDTO>> GetAllUsers()
         {
-            IEnumerable<UserDTO> boofUsers = Mapper.Map<IEnumerable<UserDTO>>( Database.QUserManager.GetAll());
-            return boofUsers;
+            IEnumerable<User> boofUsers =  Database.QUserManager.GetAll();
+            List<UserDTO> users = new List<UserDTO>();
+            foreach(var user in boofUsers)
+            {
+                ApplicationUser applicationUser = await Database.UserManager.FindByIdAsync(user.ApplicationUser.Id);
+                UserProfile userProfile = applicationUser.User.UserProfile;
+                users.Add(new UserDTO
+                {
+                    Id = applicationUser.Id,
+                    FullName = userProfile.FullName,
+                    Age = userProfile.Age,
+                    Email = userProfile.Email,
+                    Address = userProfile.Address,
+                    Phone = userProfile.Phone,
+                    ImageUrl = userProfile.ImageUrl,
+                    UserName = applicationUser.UserName,
+                    Birthday = userProfile.Birthday
+                });
+            }
+            return users;
         }
 
     }

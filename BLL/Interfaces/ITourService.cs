@@ -14,7 +14,7 @@ namespace BLL.Interfaces
         Task<OperationDetails> UploadImage(string ImageUrl, int tourId);
         Task<OperationDetails> ChangeTourInformation(TourDTO tour);
         IEnumerable<TourDTO> GetAllTours();
-        TourDTO GetTour(int tourId);
+        Task<TourDTO> GetTour(int tourId);
         Task<OperationDetails> MakeGuide(int tourId, string userId);
         Task<IEnumerable<TourDTO>> GetGuideTours(string userId);
     }

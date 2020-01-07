@@ -88,11 +88,12 @@ namespace BLL.Services
             DataBase.Dispose();
         }
 
-        public TourDTO GetTour(int tourId)
+        public async Task<TourDTO> GetTour(int tourId)
         {
             var tour = DataBase.TourManager.Get(tourId);
             if (tour == null)
                 throw new ValidationException("There is no information about this tour", "tour");
+            ApplicationUser user = await DataBase.UserManager.FindByIdAsync(tour.UserId);
             return Mapper.Map<Tour, TourDTO>(tour);
         }
 
